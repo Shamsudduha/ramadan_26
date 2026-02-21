@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>রমজান কাউন্টডাউন ২০২৬ | ঢাকা</title>
 
+<!-- ফেভিকন (চাঁদ আইকন) -->
+<link rel="icon" type="image/png" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23f4d03f' d='M50 10a40 40 0 0 0-40 40 40 40 0 0 0 40 40 40 40 0 0 0 24-8 35 35 0 0 1-49-32 35 35 0 0 1 35-35q5 0 10 1a35 35 0 0 0-20-6z'/%3E%3C/svg%3E">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
@@ -50,7 +53,7 @@ h1{
 .count-card{
     background:rgba(255,255,255,0.05);
     backdrop-filter:blur(12px);
-    padding:20px;
+    padding:20px 20px 15px 20px;
     border-radius:18px;
     text-align:center;
     box-shadow:0 10px 25px rgba(0,0,0,.4);
@@ -66,6 +69,29 @@ h1{
 .countdown{
     font-size:22px;
     font-weight:700;
+    margin-bottom:12px;
+}
+
+.today-small-times{
+    font-size:13px;
+    color:#d5dbdb;
+    display:flex;
+    justify-content:space-around;
+    border-top:1px dashed rgba(255,255,255,0.15);
+    padding-top:12px;
+    margin-top:5px;
+}
+.today-small-times span{
+    background:rgba(0,0,0,0.2);
+    padding:4px 10px;
+    border-radius:30px;
+    font-weight:400;
+    letter-spacing:0.3px;
+}
+.today-small-times i{
+    font-style:normal;
+    color:#f0b27a;
+    margin-left:6px;
 }
 
 .section-title{
@@ -134,6 +160,9 @@ h1{
 <div class="count-card">
     <div id="nextEvent"></div>
     <div class="countdown" id="countdown"></div>
+
+    <!-- আজকের ইফতার ও সাহরি ছোট ফন্টে -->
+    <div class="today-small-times" id="todaySmallTimes"></div>
 </div>
 
 <div class="section-title">অবশিষ্ট দিনসমূহ</div>
@@ -151,7 +180,7 @@ h1{
 </div>
 
 <div class="footer">
-ইসলামিক ফাউন্ডেশন বাংলাদেশ অনুসারে প্রস্তুত ||
+ইসলামিক ফাউন্ডেশন বাংলাদেশ অনুসারে প্রস্তুত || 
 MADE BY SOUAD_76
 </div>
 
@@ -159,19 +188,29 @@ MADE BY SOUAD_76
 
 <script>
 
-// Bengali numbers
+// Bengali numbers (শুধুমাত্র সময়ের জন্য)
 function toBn(num){
 const bn=["০","১","২","৩","৪","৫","৬","৭","৮","৯"];
 return num.toString().replace(/[0-9]/g,d=>bn[d]);
 }
 
-// 12hr format
+// ১২ ঘণ্টা ফরম্যাট (সময়ের জন্য)
 function format12(time){
 let [h,m]=time.split(":");
 h=parseInt(h);
 let suffix=h>=12?" (সন্ধ্যা)":" (ভোর)";
 h=h%12||12;
 return toBn(h)+":"+toBn(m)+suffix;
+}
+
+// রোজার সংখ্যাকে বাংলা শব্দে রূপান্তর (১ম, ২য়, ৩য় ... ৩০ তম)
+function rojaWord(rojaNum){
+const words=[
+    "", "প্রথম", "দ্বিতীয়", "তৃতীয়", "চতুর্থ", "পঞ্চম", "ষষ্ঠ", "সপ্তম", "অষ্টম", "নবম", "দশম",
+    "একাদশ", "দ্বাদশ", "ত্রয়োদশ", "চতুর্দশ", "পঞ্চদশ", "ষোড়শ", "সপ্তদশ", "অষ্টাদশ", "ঊনবিংশ", "বিংশ",
+    "একবিংশ", "দ্বাবিংশ", "ত্রয়োবিংশ", "চতুর্বিংশ", "পঞ্চবিংশ", "ষড়্বিংশ", "সপ্তবিংশ", "অষ্টাবিংশ", "ঊনত্রিংশ", "ত্রিংশ"
+];
+return words[rojaNum] || toBn(rojaNum); // যদি কোনো কারণে না থাকে তাহলে সংখ্যা
 }
 
 const schedule=[
@@ -209,6 +248,7 @@ const schedule=[
 
 const todayRojaEl=document.getElementById("todayRoja");
 const scheduleList=document.getElementById("scheduleList");
+const todaySmallDiv=document.getElementById("todaySmallTimes");
 
 function renderSchedule(){
 const now=new Date();
@@ -239,9 +279,17 @@ let today=new Date().toISOString().split("T")[0];
 let foundToday=schedule.find(d=>d.date===today);
 
 if(foundToday){
-todayRojaEl.innerText="আজকের রোজা সংখ্যা : "+toBn(foundToday.roja)+" রোজা";
+    // 'আজকের রোজা সংখ্যা : ৩ রোজা' না লিখে এখন লেখা হবে 'তৃতীয় রোজা'
+    let banglaWord = rojaWord(foundToday.roja);
+    todayRojaEl.innerText = "আজ " + banglaWord + " রোজা";
+    
+    todaySmallDiv.innerHTML=`
+    <span><i>🌄 সাহরি</i> ${format12(foundToday.sehri)}</span>
+    <span><i>🌅 ইফতার</i> ${format12(foundToday.iftar)}</span>
+    `;
 }else{
-todayRojaEl.innerText="";
+    todayRojaEl.innerText="";
+    todaySmallDiv.innerHTML="";
 }
 
 for(let d of schedule){
