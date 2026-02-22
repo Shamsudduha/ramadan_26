@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -72,26 +73,9 @@ h1{
     margin-bottom:12px;
 }
 
+/* আজকের ছোট সময়ের ব্লক সরিয়ে দেওয়া হয়েছে — এখন কোনো content নেই */
 .today-small-times{
-    font-size:13px;
-    color:#d5dbdb;
-    display:flex;
-    justify-content:space-around;
-    border-top:1px dashed rgba(255,255,255,0.15);
-    padding-top:12px;
-    margin-top:5px;
-}
-.today-small-times span{
-    background:rgba(0,0,0,0.2);
-    padding:4px 10px;
-    border-radius:30px;
-    font-weight:400;
-    letter-spacing:0.3px;
-}
-.today-small-times i{
-    font-style:normal;
-    color:#f0b27a;
-    margin-left:6px;
+    display: none;   /* পুরোপুরি লুকানো */
 }
 
 .section-title{
@@ -161,7 +145,7 @@ h1{
     <div id="nextEvent"></div>
     <div class="countdown" id="countdown"></div>
 
-    <!-- আজকের ইফতার ও সাহরি ছোট ফন্টে -->
+    <!-- এখন এখানে কোনো সাহরি/ইফতার দেখানো হবে না — divটি display:none; -->
     <div class="today-small-times" id="todaySmallTimes"></div>
 </div>
 
@@ -281,12 +265,9 @@ let foundToday=schedule.find(d=>d.date===today);
 if(foundToday){
     // 'আজকের রোজা সংখ্যা : ৩ রোজা' না লিখে এখন লেখা হবে 'তৃতীয় রোজা'
     let banglaWord = rojaWord(foundToday.roja);
-    todayRojaEl.innerText = "আজ " + banglaWord + " রোজা";
     
-    todaySmallDiv.innerHTML=`
-    <span><i>🌄 সাহরি</i> ${format12(foundToday.sehri)}</span>
-    <span><i>🌅 ইফতার</i> ${format12(foundToday.iftar)}</span>
-    `;
+    // একদম খালি স্ট্রিং দেওয়া হয়েছে — নিচে কিছু দেখানো হবে না
+    todaySmallDiv.innerHTML = ``;   // সাহরি/ইফতার দেখানো বন্ধ
 }else{
     todayRojaEl.innerText="";
     todaySmallDiv.innerHTML="";
@@ -327,4 +308,4 @@ updateCountdown();
 
 </body>
 </html>
-
+```
